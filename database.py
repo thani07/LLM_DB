@@ -7,10 +7,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+
 if not DATABASE_URL:
     raise RuntimeError("Please set DATABASE_URL in your environment or .env file")
 
-# echo=True temporarily helps debug SQL queries; set to False in production
-engine = create_engine(DATABASE_URL, echo=False, future=True)
+# Special handling for SQL Server (only for local system)
+if DATABASE_URL.startswith("mssql"):
+    engine = create_engine(
+        DATABASE_URL,
+        fast_executemany=True,
+        echo=False
+    )
+else:
+    # This will be used by PostgreSQL on Render
+    engine = create_engine(
+        DATABASE_URL,
+        echo=False
+    )
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
