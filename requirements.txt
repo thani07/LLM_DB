@@ -7,3 +7,5 @@ pymysql
 pyodbc
 pydantic[email]
 langchain-groq
+psycopg2-binary
+
